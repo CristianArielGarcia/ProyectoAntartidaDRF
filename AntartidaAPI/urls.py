@@ -5,6 +5,7 @@ app_name = 'AntartidaAPI'
 
 urlpatterns = [
     # URLS DE LOS SENSORES
+    path('Sensor/Delete/<int:id>', sensor_delete_view, name='sensor_delete'),
     path('Sensor/Detail/<int:id>', sensor_detail_view, name='sensor_detail'),
     path('Sensor/Update/<int:id>', sensor_detail_view, name='sensor_update'),
     path('Sensor/GetAll', sensor_view, name='list'),

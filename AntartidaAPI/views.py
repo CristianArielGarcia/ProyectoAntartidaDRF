@@ -50,9 +50,17 @@ def sensor_detail_view(request,id=None):
         return Response(sensor_serializer.error_messages)
 
     elif request.method == 'DELETE':
-        sensor = Sensor.objects.filter(id=id).first()
+        sensor: Sensor = Sensor.objects.filter(id=id).first()
         sensor.delete()
         return Response('Eliminado con éxito')
+    
+@api_view(['DELETE'])
+def sensor_delete_view(request,id=None):
+    if request.method == 'DELETE':
+        sensor: Sensor = Sensor.sensores_objects.filter(id=id).first()
+        sensor.deleted = True
+        sensor.save()
+        return Response("Eliminado exitosamente")
 
 @api_view(['GET'])
 def usuario_view(request):
@@ -123,12 +131,12 @@ def medicion_view(request):
 def medicion_detail_view(request,id=None):
 
     if request.method == 'GET':
-        medicion = Medicion.objects.filter(id=id).first()
+        medicion = Medicion.mediciones_objects.filter(id=id).first()
         medicion_serializer = MedicionSerializer(medicion)
         return Response(medicion_serializer.data)
 
     elif request.method == 'PUT':
-        medicion = Medicion.objects.filter(id=id).first()
+        medicion = Medicion.mediciones_objects.filter(id=id).first()
         medicion_serializer = MedicionSerializer(medicion, data=request.data)
         if medicion_serializer.is_valid():
             medicion_serializer.save()
@@ -137,7 +145,7 @@ def medicion_detail_view(request,id=None):
 
 
     elif request.method == 'DELETE':
-        medicion = Medicion.objects.filter(id=id).first()
+        medicion = Medicion.mediciones_objects.filter(id=id).first()
         medicion.delete()
         return Response('Eliminado con éxito')
     

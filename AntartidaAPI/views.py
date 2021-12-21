@@ -1,3 +1,7 @@
+from datetime import date
+import datetime
+from io import StringIO
+from django.db.models.fields import CharField, DateTimeField, EmailField
 from rest_framework import response,status,generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -5,6 +9,7 @@ from AntartidaFront.models import *
 from .serializers import *
 import logging
 import json
+from django.core.mail import send_mail
 # Utilizando los genericos de DRF crea automaticamente los controllers(llamados views en django)
 
 
@@ -28,7 +33,7 @@ def sensor_view(request):
             for medicion in mediciones:
                 try:
                     tipo_medicion = TipoMedicion.objects.get(nombre=medicion['tipo'])
-                    medicion = Medicion.objects.create(lectura_id = lectura.id, tipo_medicion_id=tipo_medicion.id,valor=int(medicion['valor']))
+                    medicion = Medicion.objects.create(lectura_id = lectura.id, tipo_medicion_id=tipo_medicion.id,valor=medicion['valor'])
                 except:
                     print('OMAR ALGO ANDA MAL')
             return Response({}, status=status.HTTP_201_CREATED)
@@ -156,27 +161,32 @@ def tipo_medicion_view(request):
         tipo_mediciones = TipoMedicion.tipo_mediciones_objects.all()
         tipo_mediciones_serializer = TipoMedicionSerializer(tipo_mediciones, many=True)
         return Response(tipo_mediciones_serializer.data)
+    
+
+@api_view(['GET'])
+def sensor_lecturas_por_fecha_view(request,sensor=None):
+    if(request.method == 'GET'):
+        lecturas = Lectura.lecturas_objects.filter(sensor=sensor,fecha_lectura__lte=request.GET.get('hasta', '') +" 23:59:59",fecha_lectura__gte=request.GET.get('desde', '') +" 00:00:00")
+        lecturas_serializer = LecturaSerializer(lecturas, many=True)
+        return Response(lecturas_serializer.data)
+    
+    
+@api_view(['POST',])
+def contacto_view(request):
+    if request.method == "POST":
+        serializer = ContactoSerializer(data=request.data)
+        if serializer.is_valid():
+            nombre = serializer.validated_data.get('nombre', None)
+            apellido = serializer.validated_data.get('apellido', None)
+            email = serializer.validated_data.get('email', None)
+            mensaje = serializer.validated_data.get('mensaje', None)
+            send_mail(
+                'Contacto Form mail from ' + nombre+ " " + apellido ,
+                mensaje + "\n\nResponder a: " + email,
+                email,
+                ['cagarcia.ush@gmail.com'],
+            )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
-""" Concrete View Classes
-#CreateAPIView
-Used for create-only endpoints.
-#ListAPIView
-Used for read-only endpoints to represent a collection of model instances.
-#RetrieveAPIView
-Used for read-only endpoints to represent a single model instance.
-#DestroyAPIView
-Used for delete-only endpoints for a single model instance.
-#UpdateAPIView
-Used for update-only endpoints for a single model instance.
-##ListCreateAPIView
-Used for read-write endpoints to represent a collection of model instances.
-RetrieveUpdateAPIView
-Used for read or update endpoints to represent a single model instance.
-#RetrieveDestroyAPIView
-Used for read or delete endpoints to represent a single model instance.
-#RetrieveUpdateDestroyAPIView
-Used for read-write-delete endpoints to represent a single model instance.
-"""

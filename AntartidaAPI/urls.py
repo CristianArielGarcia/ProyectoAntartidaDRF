@@ -9,27 +9,18 @@ urlpatterns = [
     path('Sensor/Detail/<int:id>', sensor_detail_view, name='sensor_detail'),
     path('Sensor/Update/<int:id>', sensor_detail_view, name='sensor_update'),
     path('Sensor/GetAll', sensor_view, name='list'),
-    # path('sensor/getall', SensorList.as_view(), name='list'),
-    # path('sensor/create', SensorCreate.as_view(), name='create'),
-    path('sensor/create', sensor_view, name='sensor_create'),
+    path('Sensor/create', sensor_view, name='sensor_create'),
+    
+    # path('Sensor/detail/<int:id>/', sensor_detail_view, name='sensor_detail_view'),
+    path('Sensor/<int:sensor>/Lecturas/GetAllByFecha', sensor_lecturas_por_fecha_view, name='sensor_lecturas_por_fecha_view'),
 
-    # URLS DE LOS USUARIOS
-    # path('usuario/', UsuarioList.as_view(), name='listCreate'),
-
+    #URL DE CONTACTO
+    path('contacto/create/',contacto_view,name='contacto'),
+    
     # URLS DEl ROL
     # path('rol/', RolList.as_view(), name='listCreate'),
-    
-    # URLS DE LOS SENSORES
-    # path('sensor/', sensor_view, name='list'),
-    # path('sensor/detail/<int:id>/', sensor_detail_view, name='sensor_detail_view'),
-    # path('sensor/create', sensor_view, name='create'),
-    # path('sensor/update/<int:id>/', SensorDetail.as_view(), name='detailCreate'),
-    #path('sensor/getall', SensorList.as_view(), name='list'),
-    # path('sensor/create', SensorCreate.as_view(), name='create'),
-    
 
     #URLS DE LAS LECTURA
-    # path('lectura/<int:sensor>/', lectura_view, name='list'),
     path('Lectura/by-sensor/<int:sensor>/', lectura_view, name='list'),
     path('lectura/detail/<int:id>/', lectura_detail_view, name='lectura_detail_view'),
     path('lectura/create', lectura_view, name='create'),
@@ -48,6 +39,4 @@ urlpatterns = [
     path('usuario/detail/<int:id>/', usuario_detail_view, name='usuario_detail_view'),
     path('usuario/create', usuario_view, name='create'),
 
-    # URLS DEl ROL
-    # path('rol/', RolList.as_view(), name='listCreate'),
 ]

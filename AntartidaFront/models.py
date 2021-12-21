@@ -40,15 +40,15 @@ class TipoEvento(models.Model):
 
 
 class TipoMedicion(models.Model):
-    
+
     class TipoMedicionesObjects(models.Manager):
         def get_queryset(self):
             return super().get_queryset() .filter(deleted=False)
-    
+
     # idTipoMedicion=models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=30)
-    unidad_de_medida = models.CharField(max_length=30)
-    color = models.CharField(max_length=50,default='rgba(255, 99, 132, 0.5)')
+    unidad_de_medida = models.CharField(max_length=30, null=True, blank=True)
+    color = models.CharField(max_length=50, default='rgba(255, 99, 132, 0.5)', null=True, blank=True)
     deleted = models.BooleanField(default=False)
     tipo_mediciones_objects = TipoMedicionesObjects()
 
@@ -57,16 +57,15 @@ class TipoMedicion(models.Model):
 
 
 class Usuario(models.Model):
-    
+
     class UsuariosObjects(models.Manager):
         def get_queryset(self):
             return super().get_queryset() .filter(deleted=False)
-        
+
     class UsuariosEditores(models.Manager):
         def get_queryset(self):
-            return super().get_queryset() .filter(rol= 1) #editor
-        
-        
+            return super().get_queryset() .filter(rol=1)  # editor
+
     # idUsuario=models.AutoField(primary_key= True)
     nombre = models.CharField(max_length=30)
     password = models.CharField(max_length=150, null=False, blank=False)
@@ -83,13 +82,11 @@ class Usuario(models.Model):
 
 
 class Evento(models.Model):
-    
-    
+
     class EventosObjects(models.Manager):
         def get_queryset(self):
             return super().get_queryset() .filter(deleted=False)
-    
-    
+
     titulo_evento = models.CharField(max_length=30)
     descripcion = models.CharField(max_length=300)
     usuario = models.ForeignKey(
@@ -110,11 +107,11 @@ class Evento(models.Model):
 
 
 class Lectura(models.Model):
-    
+
     class LecturasObjects(models.Manager):
         def get_queryset(self):
             return super().get_queryset() .filter(deleted=False)
-    
+
     # idLectura=models.AutoField(primary_key=True)
     # esta es la clave foranea al sensor
     sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE)
@@ -125,19 +122,19 @@ class Lectura(models.Model):
     objects = models.Manager()  # default model manager
     lecturas_objects = LecturasObjects()  # custom manager
 
-    def _str_(self):
-        return self.sensor.nombre + self.fechaLectura
+    def str(self):
+        return self.sensor.nombre + self.fecha_lectura
 
     class Meta:
         ordering = ('-fecha_lectura',)
 
 
 class Medicion(models.Model):
-    
+
     class MedicionesObjects(models.Manager):
         def get_queryset(self):
             return super().get_queryset() .filter(deleted=False)
-    
+
     # idMedicion=models.AutoField(primary_key=True)
     # esta es la clave foranea al sensor
     lectura = models.ForeignKey(Lectura, on_delete=models.CASCADE)

@@ -55,9 +55,6 @@ class SensorCreateSerializer(serializers.ModelSerializer):
         if 0 == value:
             raise serializers.ValidationError("La longitud no puede ser igual 0")
         return value
-    
-#     def create(self, validated_data):
-#         return super().create(validated_data)
 
 class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
@@ -70,6 +67,12 @@ class UsuarioSerializer(serializers.ModelSerializer):
         if qs.exists():
             raise serializers.ValidationError('Este email ya existe')
         return email
+
+class ContactoSerializer(serializers.Serializer):
+    nombre = serializers.CharField()
+    apellido = serializers.CharField()
+    email = serializers.EmailField()
+    mensaje = serializers.CharField()
 
 
 class RolSerializer(serializers.ModelSerializer):

@@ -6,37 +6,55 @@ from AntartidaFront.models import *
 class SensorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sensor
-        fields = ('nombre_sensor','latitud','longitud')
-    
-# class SensorDetailSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Sensor
-#         fields = ('id', 'nombreSensor', 'latitud', 'longitud')
-        
-# class SensorUpdateSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Sensor
-#         fields = ('nombreSensor', 'latitud', 'longitud', 'deleted')
+        fields = ('id','nombre','latitud','longitud')
 
-# class SensorListSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Sensor
-#         fields = ('id', 'nombreSensor', 'latitud', 'longitud') 
-        
-# class SensorCreateSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Sensor
-#         fields = ('nombreSensor', 'latitud', 'longitud') 
+class TipoMedicionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TipoMedicion
+        fields = ('nombre','unidad_de_medida','color')
 
-#     def validate_latitud(self, value):
-#         if 0 == value:
-#             raise serializers.ValidationError("La latitud no puede ser igual 0")
-#         return value
+class MedicionSerializer(serializers.ModelSerializer):
+    tipo_medicion = TipoMedicionSerializer()
+    class Meta:
+        model = Medicion
+        fields = ('lectura','tipo_medicion','valor')
+
+class LecturaSerializer(serializers.ModelSerializer):
+    mediciones = MedicionSerializer(source='medicion_set', many=True)
+    class Meta:
+        model = Lectura
+        fields = ('sensor_id','fecha_lectura','mediciones')
+
     
-#     def validate_longitud(self, value):
-#         if 0 == value:
-#             raise serializers.ValidationError("La longitud no puede ser igual 0")
-#         return value
+class SensorDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sensor
+        fields = ('id', 'nombreSensor', 'latitud', 'longitud')
+        
+class SensorUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sensor
+        fields = ('nombreSensor', 'latitud', 'longitud', 'deleted')
+
+class SensorListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sensor
+        fields = ('id', 'nombre', 'latitud', 'longitud') 
+        
+class SensorCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sensor
+        fields = ('nombreSensor', 'latitud', 'longitud') 
+
+    def validate_latitud(self, value):
+        if 0 == value:
+            raise serializers.ValidationError("La latitud no puede ser igual 0")
+        return value
+    
+    def validate_longitud(self, value):
+        if 0 == value:
+            raise serializers.ValidationError("La longitud no puede ser igual 0")
+        return value
     
 #     def create(self, validated_data):
 #         return super().create(validated_data)
@@ -45,6 +63,13 @@ class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
         fields = ('nombre', 'apellido', 'email', 'rol')
+    
+    def validate_email(self, value):
+        email = value
+        qs = Usuario.objects.filter(email__iexact=email)
+        if qs.exists():
+            raise serializers.ValidationError('Este email ya existe')
+        return email
 
 
 class RolSerializer(serializers.ModelSerializer):

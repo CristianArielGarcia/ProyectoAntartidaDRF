@@ -6,7 +6,7 @@ class Rol(models.Model):
     nombre_rol = models.CharField(max_length=30)
     deleted = models.BooleanField(default=False)
 
-    def __str__(self):
+    def _str_(self):
         return self.nombreRol
 
 
@@ -19,15 +19,15 @@ class Sensor(models.Model):
             return super().get_queryset() .filter(deleted=False)
 
     # idSensor=models.AutoField(primary_key= True)
-    nombre_sensor = models.CharField(max_length=30, unique=True)
-    latitud = models.BigIntegerField(null=True, blank=True)
-    longitud = models.BigIntegerField(null=True, blank=True)
+    nombre = models.CharField(max_length=30, unique=True)
+    latitud = models.FloatField(null=True, blank=True)
+    longitud = models.FloatField(null=True, blank=True)
     deleted = models.BooleanField(default=False)
     objects = models.Manager()  # default model manager
     sensores_objects = SensoresObjects()  # custom manager
 
-    def __str__(self):
-        return self.nombreSensor
+    def _str_(self):
+        return self.nombre
 
 
 class TipoEvento(models.Model):
@@ -35,18 +35,25 @@ class TipoEvento(models.Model):
     nombre = models.CharField(max_length=30)
     deleted = models.BooleanField(default=False)
 
-    def __str__(self):
+    def _str_(self):
         return self.nombre
 
 
 class TipoMedicion(models.Model):
+    
+    class TipoMedicionesObjects(models.Manager):
+        def get_queryset(self):
+            return super().get_queryset() .filter(deleted=False)
+    
     # idTipoMedicion=models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=30)
     unidad_de_medida = models.CharField(max_length=30)
+    color = models.CharField(max_length=50,default='rgba(255, 99, 132, 0.5)')
     deleted = models.BooleanField(default=False)
+    tipo_mediciones_objects = TipoMedicionesObjects()
 
-    def __str__(self):
-        return self.nombre + 'unidad:' + self.unidadDeMedida
+    def _str_(self):
+        return self.nombre + 'unidad:' + self.unidad_de_medida
 
 
 class Usuario(models.Model):
@@ -71,7 +78,7 @@ class Usuario(models.Model):
     usuarios_editores = UsuariosEditores()  # editores
     usuarios_objects = UsuariosObjects()  # custom manager
 
-    def __str__(self):
+    def _str_(self):
         return self.nombre + self.apellido + 'email: ' + self.email
 
 
@@ -95,7 +102,7 @@ class Evento(models.Model):
     objects = models.Manager()  # default model manager
     eventos_objects = EventosObjects()  # custom manager
 
-    def __str__(self):
+    def _str_(self):
         return self.tituloEvento
 
     class Meta:
@@ -118,8 +125,8 @@ class Lectura(models.Model):
     objects = models.Manager()  # default model manager
     lecturas_objects = LecturasObjects()  # custom manager
 
-    def __str__(self):
-        return self.sensor + self.fechaLectura
+    def _str_(self):
+        return self.sensor.nombre + self.fechaLectura
 
     class Meta:
         ordering = ('-fecha_lectura',)
@@ -143,5 +150,5 @@ class Medicion(models.Model):
     objects = models.Manager()  # default model manager
     mediciones_objects = MedicionesObjects()  # custom manager
 
-    def __str__(self):
-        return self.tipoMedicion + self.valor
+    def _str_(self):
+        return self.tipo_medicion + self.valor

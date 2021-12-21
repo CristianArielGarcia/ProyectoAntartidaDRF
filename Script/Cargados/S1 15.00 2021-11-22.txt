@@ -1,0 +1,1 @@
+Temperatura0;Humedad24;
